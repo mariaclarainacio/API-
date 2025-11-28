@@ -2,40 +2,29 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
-const connectDB = require('./config/db');
-
 const authRouter = require('./routes/authRouter');
+const taskRouter = require('./routes/taskRoutes');
 const produtosRouter = require('./routes/produtosRouter');
 const usuariosRouter = require('./routes/usuariosRouter');
-const taskRouter = require('./routes/taskRoutes'); 
-
-let swaggerSetup;
-try {
-  swaggerSetup = require('./docs/swagger');
-} catch (err) {
-  swaggerSetup = null;
-}
-
-const errorHandler = require('./middlewares/errorHandler');
+const apidocsRouter = require('./routes/apidocsRouter');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-const API_PREFIX = '/api/v1';
+app.use('/api/auth', authRouter);
+app.use('/api/tasks', taskRouter);
+app.use('/api/produtos', produtosRouter);
+app.use('/api/usuarios', usuariosRouter);
+app.use('/api/docs', apidocsRouter);
 
-app.use(`${API_PREFIX}/auth`, authRouter);
-app.use(`${API_PREFIX}/produtos`, produtosRouter);
-app.use(`${API_PREFIX}/usuarios`, usuariosRouter);
-if (taskRouter) app.use(`${API_PREFIX}/tasks`, taskRouter);
+app.get('/', (req, res) => {
+  res.json({ message: 'API funcionando!' });
+});
 
-app.get('/', (req, res) => res.send('API funcionando! 🚀'));
-
-if (swaggerSetup) {
-  swaggerSetup(app); 
-}
-
-app.use(errorHandler);
+app.use((req, res) => {
+  res.status(404).json({ message: 'Rota não encontrada' });
+});
 
 module.exports = app;

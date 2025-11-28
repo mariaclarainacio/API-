@@ -1,3 +1,7 @@
+// Nota: No ambiente de testes (NODE_ENV === 'test') o middleware injeta um user fake
+// para permitir execução dos testes de endpoints sem dependência externa.
+// Em produção, o token é verificado normalmente.
+
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
