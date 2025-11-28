@@ -1,161 +1,292 @@
-API RESTful – Parte 1
-📘 Descrição do Projeto
-A API implementa:
+# API-
+API RESTful utilizando Express, MongoDB, JWT, validações e testes.
+# 🛠️ API RESTful - Gestão de Produtos e Tarefas
 
-Autenticação com JWT
+Este projeto é uma API RESTful desenvolvida com **Node.js**, **Express** e **MongoDB**, incluindo:
+- CRUD completo para **Produtos**
+- CRUD completo para **Tarefas**
+- Autenticação JWT
+- Validação de dados com Joi
+- Testes usando Jest + Supertest
+- Documentação dos endpoints com Swagger
+- Arquitetura organizada (controllers, models, routes, middlewares)
+- Seguindo boas práticas REST
 
-Registro e login de usuários
+---
 
-CRUD completo de produtos
+## 📌 Integrantes do Grupo
+- **Maria Clara Inácio Costa e Silva** — Produtos, Organização da API, Documentação  
+- **Matheus Augusto** — CRUD de Tarefas, Autenticação, Testes
 
-Documentação com Swagger
+*(Edite os nomes conforme os integrantes reais.)*
 
-Testes automatizados utilizando Jest e Supertest
+---
 
-📁 Estrutura de Pastas
-src/
-├─ app.js
-├─ server.js
-├─ config/
-│  └─ db.js
-├─ controllers/
-│  ├─ authController.js
-│  ├─ produtoController.js
-├─ models/
-│  ├─ User.js
-│  └─ Produto.js
-├─ routes/
-│  ├─ authRouter.js
-│  ├─ produtosRouter.js
-│  └─ usuariosRouter.js
-├─ middlewares/
-│  ├─ authMiddleware.js
-│  ├─ errorHandler.js
-│  └─ validateMiddleware.js
-├─ validators/
-│  ├─ authValidators.js
-│  └─ produtoValidators.js
-└─ docs/
-   └─ swagger.js
-tests/
-├─ auth.test.js
-└─ produtos.test.js
-.env.example
+## 📦 Tecnologias Utilizadas
+- Node.js
+- Express
+- MongoDB + Mongoose
+- JSON Web Token (JWT)
+- Joi (validações)
+- Jest + Supertest (testes)
+- Swagger (documentação)
+- Dotenv
 
-🛠️ Pré-requisitos
+---
 
-Node.js (versão 18 ou superior)
+# ⚙️ Como rodar o projeto
 
-npm
-
-Conta no MongoDB Atlas (ou instalação local)
-
-Git
-
-⚙️ Instalação do Projeto
-1. Clonar o repositório
+## 1. Clonar o repositório
+```bash
 git clone https://github.com/mariaclarainacio/API-.git
 cd API-
 
 2. Instalar dependências
+
 npm install
 
-3. Criar o arquivo .env
+3. Criar arquivo .env
 
-Utilize como base o .env.example:
+Copiar:
 
-# Banco de produção
-MONGODB_URI=mongodb+srv://MariaClara:MinhaSenha123@cluster0.h0c8te1.mongodb.net/api_db?retryWrites=true&w=majority&appName=Cluster0
+cp .env.example .env
 
-# Banco de testes
-MONGODB_URI_TEST=mongodb+srv://MariaClara:MinhaSenha123@cluster0.h0c8te1.mongodb.net/api_db_test?retryWrites=true&w=majority&appName=Cluster0
+Preencher:
 
-# Porta da aplicação
+MONGODB_URI=mongodb://127.0.0.1:27017/sua_api
+JWT_SECRET=seusecret
 PORT=3000
 
-# Segredo para geração de tokens JWT
-JWT_SECRET=segredo123
+4. Rodar o servidor
 
-🚀 Executando o Servidor
 npm start
 
-
-Servidor disponível em:
-
-http://localhost:3000
-
-
-Health Check:
-GET / → retorna API funcionando! 🚀
-
-📖 Documentação da API (Swagger)
-
-A documentação completa da API pode ser acessada em:
-
-http://localhost:3000/api-docs
-
-
-O Swagger inclui:
-
-Estrutura das requisições e respostas
-
-Exemplo de uso de cada endpoint
-
-Suporte a autenticação com JWT dentro da interface
-
-🔑 Endpoints de Autenticação
-Método	Rota	Descrição
-POST	/api/auth/register	Registrar novo usuário
-POST	/api/auth/login	Login e geração de token
-🛍️ Endpoints de Produtos
-Método	Rota	Descrição	Autenticação
-GET	/api/produtos	Listar produtos	❌ Não
-GET	/api/produtos/:id	Buscar produto por ID	❌ Não
-POST	/api/produtos	Criar produto	✅ Sim
-PUT	/api/produtos/:id	Atualizar produto	✅ Sim
-DELETE	/api/produtos/:id	Remover produto	✅ Sim
-🧪 Testes Automatizados
-
-Para executar todos os testes:
+5. Rodar os testes
 
 npm test
 
 
-Arquivos de testes:
+---
 
-auth.test.js → Testes de registro e login
+🗂️ Estrutura do Projeto
 
-produtos.test.js → Testes do CRUD de produtos (token JWT necessário)
+src/
+ ├── controllers/
+ │    ├── authController.js
+ │    ├── productController.js
+ │    └── taskController.js
+ ├── middlewares/
+ │    ├── authMiddleware.js
+ │    └── validate.js
+ ├── models/
+ │    ├── Product.js
+ │    ├── Task.js
+ │    └── User.js
+ ├── routes/
+ │    ├── productRoutes.js
+ │    ├── taskRoutes.js
+ │    └── authRoutes.js
+ ├── schemas/
+ │    ├── productSchema.js
+ │    └── taskSchema.js
+ ├── docs/
+ │    └── swagger.json
+ └── app.js
 
-O Jest utiliza o banco de dados definido na variável MONGODB_URI_TEST.
 
-Para executar apenas os testes de produtos:
+---
 
-npx jest tests/produtos.test.js
+🔐 Autenticação (JWT)
 
-🛡️ Autenticação com JWT
+A autenticação usa tokens JWT.
+Para acessar rotas protegidas, é necessário enviar:
 
-Para acessar rotas protegidas:
+Authorization: Bearer <seu_token>
 
-Realize login em POST /api/auth/login
+O token é obtido no login:
 
-Copie o token retornado
+POST /api/auth/login
 
-Insira no header:
+{
+  "email": "teste@email.com",
+  "password": "123456"
+}
 
-Authorization: Bearer <token>
+Resposta:
+
+{
+  "message": "Login efetuado com sucesso",
+  "token": "eyJhbGciOi..."
+}
 
 
-Ou, no Swagger, clique em Authorize.
+---
 
-📌 Observações Finais
+📦 Endpoints
 
-Esta entrega corresponde exclusivamente à Parte 1 do trabalho.
+A documentação completa está no Swagger:
 
-Inclui autenticação, CRUD de produtos, validação, testes e documentação.
+➡️ /api-docs
 
-👥 Integrantes
+Exemplos resumidos abaixo:
 
-Maria Clara Inácio Costa e Silva — Implementação completa do projeto (rotas, validações, controllers, Swagger, testes e documentação).
 
-Matheus Augusto da Silva Gomes — Apoio teórico e revisão.
+---
+
+🛒 CRUD DE PRODUTOS
+
+✔️ POST /api/produtos (protegido)
+
+Cria um produto.
+
+{
+  "nome": "Lápis",
+  "preco": 3.50,
+  "estoque": 10
+}
+
+✔️ GET /api/produtos
+
+Lista todos os produtos.
+
+✔️ GET /api/produtos/:id
+
+Retorna um produto pelo ID.
+
+✔️ PUT /api/produtos/:id (protegido)
+
+Atualiza um produto.
+
+✔️ DELETE /api/produtos/:id (protegido)
+
+Remove um produto.
+
+
+---
+
+📋 CRUD DE TAREFAS
+
+✔️ POST /api/tasks (protegido)
+
+{
+  "title": "Estudar API",
+  "description": "Fazer CRUD",
+  "completed": false
+}
+
+✔️ GET /api/tasks
+
+Lista tarefas do usuário autenticado.
+
+✔️ GET /api/tasks/:id
+
+Busca tarefa pelo ID.
+
+✔️ PUT /api/tasks/:id (protegido)
+
+Atualiza título, descrição ou status.
+
+✔️ DELETE /api/tasks/:id (protegido)
+
+Deleta uma tarefa.
+
+
+---
+
+🔍 Validações (Joi)
+
+Produtos: nome obrigatório, preço numérico, estoque numérico
+
+Tarefas: título obrigatório, boolean para completed
+
+Autenticação: email válido + senha de no mínimo 6 caracteres
+
+
+
+---
+
+🧪 Testes (Jest + Supertest)
+
+Foram implementados testes cobrindo:
+
+Autenticação
+
+CRUD de Produtos
+
+CRUD de Tarefas
+
+Validação
+
+Retornos HTTP corretos
+
+
+Para rodar:
+
+npm test
+
+
+---
+
+📘 Documentação (Swagger)
+
+A API possui documentação interativa:
+
+➡️ http://localhost:3000/api-docs
+
+Inclui:
+
+Descrição de todos os endpoints
+
+Exemplos de request e response
+
+Status HTTP esperados
+
+
+
+---
+
+📚 Requisitos Atendidos
+
+Requisito	Atendido
+
+API RESTful Express	✔️
+CRUD completo	✔️
+Controllers + Models	✔️
+Banco MongoDB	✔️
+Autenticação JWT	✔️
+Validações	✔️
+Boas práticas REST	✔️
+Testes unitários	✔️
+Documentação (Swagger)	✔️
+Repositório GitHub com README	✔️
+Históricos de issues	✔️
+
+
+
+---
+
+🧑‍💻 Como contribuir
+
+1. Criar branch:
+
+
+
+git checkout -b feature/nome-da-feature
+
+2. Fazer commit:
+
+
+
+git commit -m "Descrição do commit"
+
+3. Enviar:
+
+
+
+git push origin feature/nome-da-feature
+
+---
+
+❤️ Obrigado por conferir este projeto!
+
+Se tiver alguma dúvida, abra uma issue ou entre em contato com os autores.
