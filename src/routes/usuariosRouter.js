@@ -1,53 +1,67 @@
-const express = require('express');
-const router = express.Router();
-const User = require('../models/User');
-const protect = require('../middlewares/authMiddleware');
+const { Router } = require("express");
+const User = require("../models/User");
+const protect = require("../middlewares/authMiddleware");
 
-router.get('/', protect, async (req, res) => {
+const router = Router();
+
+router.get("/", protect, async (req, res) => {
   try {
-    const users = await User.find().select('-password'); // Remove a senha da resposta
-    res.json(users);
+    const users = await User.findAll({
+      attributes: { exclude: ["password"] }
+    });
+    res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-router.get('/:id', protect, async (req, res) => {
+router.get("/:id", protect, async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('-password');
+    const user = await User.findByPk(req.params.id, {
+      attributes: { exclude: ["password"] }
+    });
+
     if (!user) {
-      return res.status(404).json({ message: 'Usuário não encontrado' });
+      return res.status(404).json({ message: "Usuário não encontrado" });
     }
-    res.json(user);
+
+    res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-router.put('/:id', protect, async (req, res) => {
+router.put("/:id", protect, async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    ).select('-password');
+    const user = await User.findByPk(req.params.id);
 
     if (!user) {
-      return res.status(404).json({ message: 'Usuário não encontrado' });
+      return res.status(404).json({ message: "Usuário não encontrado" });
     }
-    res.json(user);
+
+    await user.update(req.body);
+
+    const updatedUser = await User.findByPk(req.params.id, {
+      attributes: { exclude: ["password"] }
+    });
+
+    res.status(200).json(updatedUser);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
-router.delete('/:id', protect, async (req, res) => {
+router.delete("/:id", protect, async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
+    const user = await User.findByPk(req.params.id);
+
     if (!user) {
-      return res.status(404).json({ message: 'Usuário não encontrado' });
+      return res.status(404).json({ message: "Usuário não encontrado" });
     }
-    res.json({ message: 'Usuário deletado com sucesso' });
+
+    await user.destroy();
+
+    res.status(204).send();
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

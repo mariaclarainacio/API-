@@ -36,3 +36,28 @@ const setupSwagger = (app) => {
 };
 
 module.exports = setupSwagger;
+/**
+ * @swagger
+ * /usuarios:
+ *   get:
+ *     summary: Lista todos os usuários
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de usuários
+ *
+ * /usuarios/{id}:
+ *   get:
+ *     summary: Retorna um usuário pelo ID
+ *     security:
+ *       - bearerAuth: []
+ *   put:
+ *     summary: Atualiza os dados de um usuário
+ *     security:
+ *       - bearerAuth: []
+ *   delete:
+ *     summary: Remove um usuário
+ *     security:
+ *       - bearerAuth: []
+ */
