@@ -1,29 +1,41 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const taksRoutes = require('./routes/taskRoutes');
-require('dotenv').config();
-require('./config/db');
+
+const connectDB = require('./config/db');
 
 const authRouter = require('./routes/authRouter');
 const produtosRouter = require('./routes/produtosRouter');
-const usuariosRouter = require('./routes/usuariosRouter'); 
+const usuariosRouter = require('./routes/usuariosRouter');
+const taskRouter = require('./routes/taskRoutes'); 
 
-const swaggerSetup = require('./docs/swagger');
+let swaggerSetup;
+try {
+  swaggerSetup = require('./docs/swagger');
+} catch (err) {
+  swaggerSetup = null;
+}
 
-const app = express(); 
+const errorHandler = require('./middlewares/errorHandler');
+
+const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/auth', authRouter);
-app.use('/api/produtos', produtosRouter);
-app.use('/api/usuarios', usuariosRouter); 
-app.use('/api/tasks', taksRoutes);
+const API_PREFIX = '/api/v1';
 
-app.get('/', (req, res) => {
-    res.send('API funcionando! 🚀');
-});
+app.use(`${API_PREFIX}/auth`, authRouter);
+app.use(`${API_PREFIX}/produtos`, produtosRouter);
+app.use(`${API_PREFIX}/usuarios`, usuariosRouter);
+if (taskRouter) app.use(`${API_PREFIX}/tasks`, taskRouter);
 
-swaggerSetup(app);
+app.get('/', (req, res) => res.send('API funcionando! 🚀'));
+
+if (swaggerSetup) {
+  swaggerSetup(app); 
+}
+
+app.use(errorHandler);
 
 module.exports = app;
